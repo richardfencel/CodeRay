@@ -1,0 +1,306 @@
+﻿<!-- Copyright Richard Fencel Software (c) 2014-->
+
+<Window x:Class="CodeRayWpfLib.CodeRayDlg"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:local="clr-namespace:CodeRayWpfLib"
+        Title="Code Ray (copyright (c) Richard Fencel 2014"
+        Height="600"
+        Width="600">
+
+    <Window.Resources>
+        <!--We can't put the TreeVieweItem style here.  You would think that it would flow down to the TreeViewItem's in the TreeView but it does not.  This is probably
+        because Styles flow down the logical tree, not the visual tree and the logical tree stops at template boundaries.-->
+
+        <!--Needed by the  TreeViewItem ControlTemplate.  This is part of the original template as published by Microsoft. -->
+        <SolidColorBrush x:Key="GlyphBrush"
+                         Color="#444" />
+    </Window.Resources>
+    <Grid>
+        <Grid>
+            <Grid.Resources>
+                <HierarchicalDataTemplate DataType="{x:Type local:Node}"
+                                          ItemsSource="{Binding Path=Children}">
+                    <TextBlock Text="{Binding Path=LeafName}" />
+                </HierarchicalDataTemplate>
+            </Grid.Resources>
+
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+
+            <Menu Grid.Row="0"
+                  Grid.Column="0" />
+            <TreeView  x:Name="_myTreeView"
+                       Grid.Row="1"
+                       Grid.Column="0"
+                       Padding="10"
+                       MinWidth="200">
+
+                <TreeView.Resources>
+
+                    <!--Needed by the original TreeViewItem ControlTemplate provided by Micrsoft-->
+                    <Style x:Key="ExpandCollapseToggleStyle"
+                           TargetType="ToggleButton">
+                        <Setter Property="Focusable"
+                                Value="False" />
+                        <Setter Property="Template">
+                            <Setter.Value>
+                                <ControlTemplate TargetType="ToggleButton">
+                                    <Grid Width="15"
+                                          Height="13"
+                                          Background="Transparent">
+                                        <Path x:Name="ExpandPath"
+                                              HorizontalAlignment="Left"
+                                              VerticalAlignment="Center"
+                                              Margin="1,1,1,1"
+                                              Fill="{StaticResource GlyphBrush}"
+                                              Data="M 4 0 L 8 4 L 4 8 Z" />
+                                    </Grid>
+                                    <ControlTemplate.Triggers>
+                                        <Trigger Property="IsChecked"
+                                                 Value="True">
+                                            <Setter Property="Data"
+                                                    TargetName="ExpandPath"
+                                                    Value="M 0 4 L 8 4 L 4 8 Z" />
+                                        </Trigger>
+                                    </ControlTemplate.Triggers>
+                                </ControlTemplate>
+                            </Setter.Value>
+                        </Setter>
+                    </Style>
+              
+                    <!--Needed by the original TreeViewItem ControlTemplate provided by Micrsoft-->
+                    <Style x:Key="TreeViewItemFocusVisual">
+                        <Setter Property="Control.Template">
+                            <Setter.Value>
+                                <ControlTemplate>
+                                    <Border>
+                                        <Rectangle Margin="0,0,0,0"
+                                                   StrokeThickness="5"
+                                                   Stroke="Black"
+                                                   StrokeDashArray="1 2"
+                                                   Opacity="0" />
+                                    </Border>
+                                </ControlTemplate>
+                            </Setter.Value>
+                        </Setter>
+                    </Style>
+                </TreeView.Resources>
+
+                <TreeView.ItemContainerStyle>
+
+                    <!--This is the default TreeViewItem Style with ControlTemplate provided by Microsoft at:  http://msdn.microsoft.com/en-us/library/vstudio/ms788727(v=vs.90).aspx
+                    We have changed it where indicated by a comment.-->
+
+                    <Style TargetType="{x:Type TreeViewItem}">
+                       <Setter Property="Background"
+                                Value="Transparent" />
+                        <Setter Property="HorizontalContentAlignment"
+                                Value="{Binding Path=HorizontalContentAlignment, RelativeSource={RelativeSource AncestorType={x:Type ItemsControl}}}" />
+                        <Setter Property="VerticalContentAlignment"
+                                Value="{Binding Path=VerticalContentAlignment, RelativeSource={RelativeSource AncestorType={x:Type ItemsControl}}}" />
+                        <Setter Property="Padding"
+                                Value="1,0,0,0" />
+                        <Setter Property="Foreground"
+                                Value="{DynamicResource {x:Static SystemColors.ControlTextBrushKey}}" />
+                        <Setter Property="FocusVisualStyle"
+                                Value="{StaticResource TreeViewItemFocusVisual}" />
+                        <Setter Property="Template">
+                            <Setter.Value>
+                                <ControlTemplate TargetType="{x:Type TreeViewItem}">
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition MinWidth="19"
+                                                              Width="Auto" />
+                                            <ColumnDefinition Width="Auto" />
+                                            <ColumnDefinition Width="*" />
+                                        </Grid.ColumnDefinitions>
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="Auto" />
+                                            <RowDefinition />
+                                        </Grid.RowDefinitions>
+                                        <ToggleButton x:Name="Expander"
+                                                      Style="{StaticResource ExpandCollapseToggleStyle}"
+                                                      IsChecked="{Binding Path=IsExpanded, RelativeSource={RelativeSource TemplatedParent}}"
+                                                      ClickMode="Press" />
+                                        <Border Name="Bd"
+                                                Grid.Column="1"
+                                                Background="{TemplateBinding Background}"
+                                                BorderBrush="{TemplateBinding BorderBrush}"
+                                                BorderThickness="{TemplateBinding BorderThickness}"
+                                                Padding="{TemplateBinding Padding}">
+                                            <ContentPresenter x:Name="PART_Header"
+                                                              ContentSource="Header"
+                                                              HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" />
+                                        </Border>
+                                        <ItemsPresenter x:Name="ItemsHost"
+                                                        Grid.Row="1"
+                                                        Grid.Column="1"
+                                                        Grid.ColumnSpan="2" />
+                                    </Grid>
+                                    <ControlTemplate.Triggers>
+
+                                        <!--These DataTriggers provide the red/blue/green foreground colors for the treeviewitems' text depending on whether the item represents a view,
+                                        view model or or view model collection. -->
+                                        <DataTrigger Binding="{Binding Path=Type}"
+                                                     Value="{x:Static local:ElementType.View}">
+                                            <Setter Property="Foreground"
+                                                    Value="{x:Static local:Constants.ViewBrush}" />
+                                        </DataTrigger>
+                                        <DataTrigger Binding="{Binding Path=Type}"
+                                                     Value="{x:Static local:ElementType.ViewModel}">
+                                            <Setter Property="Foreground"
+                                                    Value="{x:Static local:Constants.ViewModelBrush}" />
+                                        </DataTrigger>
+                                        <DataTrigger Binding="{Binding Path=Type}"
+                                                     Value="{x:Static local:ElementType.ViewModelCollection}">
+                                            <Setter Property="Foreground"
+                                                    Value="{x:Static local:Constants.ViewModelCollectionBrush}" />
+                                        </DataTrigger>
+
+                                        <!--Our next task to make highlighted background color the same as unhighlighted foreground. We would have liked to put this
+                                        logic in the Style.Triggers above in order to eliminate the need to provide a ControlTemplate for TreeViewItem. However, this 
+                                        will not work because the IsSelected Trigger in the default ControlTemplate will take over.  The solution is to modify the already provided
+                                        ControlTemplate so we add in new foreground coloring logic and take out the existing coloring logic. -->
+                                       
+                                        <!--Choose selection color for View-->
+                                        <MultiDataTrigger>
+                                            <MultiDataTrigger.Conditions>
+                                                <Condition Binding="{Binding RelativeSource={RelativeSource Self}, Path=IsSelected}"
+                                                           Value="True" />
+                                                <Condition Binding="{Binding Path=Type}"
+                                                           Value="{x:Static local:ElementType.View}" />
+                                            </MultiDataTrigger.Conditions>
+                                            <Setter Property="Background"
+                                                    Value="{x:Static local:Constants.ViewBrush}" />
+                                            <Setter Property="Foreground"
+                                                    Value="{DynamicResource {x:Static SystemColors.HighlightTextBrushKey}}" />
+                                        </MultiDataTrigger>
+
+                                        <!--Choose selection color for ViewModel-->
+                                        <MultiDataTrigger>
+                                            <MultiDataTrigger.Conditions>
+                                                <Condition Binding="{Binding RelativeSource={RelativeSource Self}, Path=IsSelected}"
+                                                           Value="True" />
+                                                <Condition Binding="{Binding Path=Type}"
+                                                           Value="{x:Static local:ElementType.ViewModel}" />
+                                            </MultiDataTrigger.Conditions>
+                                            <Setter Property="Background"
+                                                    Value="{x:Static local:Constants.ViewModelBrush}" />
+                                            <Setter Property="Foreground"
+                                                    Value="{DynamicResource {x:Static SystemColors.HighlightTextBrushKey}}" />
+                                        </MultiDataTrigger>
+
+                                        <!--Choose selection color for ViewModelCollection-->
+                                        <MultiDataTrigger>
+                                            <MultiDataTrigger.Conditions>
+                                                <Condition Binding="{Binding RelativeSource={RelativeSource Self}, Path=IsSelected}"
+                                                           Value="True" />
+                                                <Condition Binding="{Binding Path=Type}"
+                                                           Value="{x:Static local:ElementType.ViewModelCollection}" />
+                                            </MultiDataTrigger.Conditions>
+                                            <Setter Property="Background"
+                                                    Value="{x:Static local:Constants.ViewModelCollectionBrush}" />
+                                            <Setter Property="Foreground"
+                                                    Value="{DynamicResource {x:Static SystemColors.HighlightTextBrushKey}}" />
+                                        </MultiDataTrigger>
+
+                                        <!--Note:  At first I tried to implement the MultiDataTriggers as: -->
+                                        <!--<MultiDataTrigger>
+                                            <MultiDataTrigger.Conditions>
+                                                <Condition Binding="{Binding Path=IsSelected}" Value="true"/>
+                                                <Condition Binding="{Binding Path=Type}" Value="{x:Static local:ElementType.View}"/>
+                                            </MultiDataTrigger.Conditions>
+                                            <Setter Property="Background" Value="{x:Static local:Constants.ViewBrush}"/>
+                                            <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.HighlightTextBrushKey}}"/>
+                                        </MultiDataTrigger>-->
+                                        <!--However, this does work, it blows up the system.  You cannot mix Property and Data Trigger Conditions-->
+
+                                        <Trigger Property="IsExpanded"
+                                                 Value="false">
+                                            <Setter TargetName="ItemsHost"
+                                                    Property="Visibility"
+                                                    Value="Collapsed" />
+                                        </Trigger>
+                                        <Trigger Property="HasItems"
+                                                 Value="false">
+                                            <Setter TargetName="Expander"
+                                                    Property="Visibility"
+                                                    Value="Hidden" />
+                                        </Trigger>
+                                        <MultiTrigger>
+                                            <MultiTrigger.Conditions>
+                                                <Condition Property="HasHeader"
+                                                           Value="false" />
+                                                <Condition Property="Width"
+                                                           Value="Auto" />
+                                            </MultiTrigger.Conditions>
+                                            <Setter TargetName="PART_Header"
+                                                    Property="MinWidth"
+                                                    Value="75" />
+                                        </MultiTrigger>
+                                        <MultiTrigger>
+                                            <MultiTrigger.Conditions>
+                                                <Condition Property="HasHeader"
+                                                           Value="false" />
+                                                <Condition Property="Height"
+                                                           Value="Auto" />
+                                            </MultiTrigger.Conditions>
+                                            <Setter TargetName="PART_Header"
+                                                    Property="MinHeight"
+                                                    Value="19" />
+                                        </MultiTrigger>
+                                        <!--This is replaced by our custom logic above-->
+                                        <!--<Trigger Property="IsSelected"
+                                                 Value="true">
+                                            <Setter TargetName="Bd"
+                                                    Property="Background"
+                                                    Value="{DynamicResource {x:Static SystemColors.HighlightBrushKey}}" />
+                                            <Setter Property="Foreground"
+                                                    Value="{DynamicResource {x:Static SystemColors.HighlightTextBrushKey}}" />
+                                        </Trigger>-->
+                                        
+                                        <!--This is replaced by our custom logic above-->
+                                        <!--<MultiTrigger>
+                                            <MultiTrigger.Conditions>
+                                                <Condition Property="IsSelected"
+                                                           Value="true" />
+                                                <Condition Property="IsSelectionActive"
+                                                           Value="false" />
+                                            </MultiTrigger.Conditions>
+                                            <Setter TargetName="Bd"
+                                                    Property="Background"
+                                                    Value="{DynamicResource {x:Static SystemColors.ControlBrushKey}}" />
+                                            <Setter Property="Foreground"
+                                                    Value="{DynamicResource {x:Static SystemColors.ControlTextBrushKey}}" />
+                                        </MultiTrigger>-->
+                                        <Trigger Property="IsEnabled"
+                                                 Value="false">
+                                            <Setter Property="Foreground"
+                                                    Value="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}" />
+                                        </Trigger>
+                                    </ControlTemplate.Triggers>
+                                </ControlTemplate>
+                            </Setter.Value>
+                        </Setter>
+                    </Style>
+                </TreeView.ItemContainerStyle>
+            </TreeView>
+
+            <!--CanUserAddRows=false eliminates the empty row at the bottom-->
+            <DataGrid x:Name="Records"
+                      SelectionMode="Single"
+                      Grid.Row="1"
+                      Grid.Column="1"
+                      CanUserAddRows="false" />
+        </Grid>
+    </Grid>
+</Window>
