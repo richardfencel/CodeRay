@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.27703.2047
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SimpleListBoxWpfApp", "CodeRaySimpleListBoxWpfApp\SimpleListBoxWpfApp.csproj", "{55DD9407-55C2-4A34-A2E3-E78C9B56F080}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SimpleListBoxWpfApp", "SimpleListBoxWpfApp\SimpleListBoxWpfApp.csproj", "{55DD9407-55C2-4A34-A2E3-E78C9B56F080}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CodeRayWpfLib", "CodeRayWpfLib\CodeRayWpfLib.csproj", "{7355FD79-6EF1-483F-843E-85AFC6008C65}"
 EndProject
